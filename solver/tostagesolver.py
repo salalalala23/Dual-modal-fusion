@@ -130,7 +130,7 @@ class toStageSolver(Solver):
                     cycle_pan_loss = self.L1(n_p, cycle_pan)
 
                     # identity loss (remove these for efficiency if you set lambda_identity=0)
-                    # 防止生成一个一样的？？
+                    
                     identity_ms = self.gen_M(n_m)
                     identity_pan = self.gen_P(n_p)
                     identity_ms_loss = self.L1(n_m, identity_ms)
@@ -153,16 +153,6 @@ class toStageSolver(Solver):
                             + adversarial_ms_loss * self.cfg['dqtl']['l_ad']
                             + adversarial_pan_loss * self.cfg['dqtl']['l_ad']
                     )/2
-                ld_m.append(D_M_loss.cpu().detach().numpy().item())
-                ld_p.append(D_P_loss.cpu().detach().numpy().item())
-                lg_m.append(loss_G_M.cpu().detach().numpy().item())
-                lg_p.append(loss_G_P.cpu().detach().numpy().item())
-                lc_m.append(cycle_ms_loss.cpu().detach().numpy().item())
-                lc_p.append(cycle_pan_loss.cpu().detach().numpy().item())
-                li_m.append(identity_ms_loss.cpu().detach().numpy().item())
-                li_p.append(identity_pan_loss.cpu().detach().numpy().item())
-                la_m.append(adversarial_ms_loss.cpu().detach().numpy().item())
-                la_p.append(adversarial_pan_loss.cpu().detach().numpy().item())
                 self.opt_gen.zero_grad()
                 self.g_scaler.scale(G_loss).backward()
                 self.g_scaler.step(self.opt_gen)
@@ -174,14 +164,6 @@ class toStageSolver(Solver):
                     self.xianhua(fake_ms, self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/f_m_{epoch}_{idx}.png")
                     self.xianhua(p, self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/p_{idx}.png")
                     self.xianhua(m, self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/m_{idx}.png")
-                    # cv2.imwrite(self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/fake_pan_{idx}.png",
-                    #             fake_pan[0][:3, :, :].cpu().detach().numpy().transpose((1, 2 ,0))*255)
-                    # cv2.imwrite(self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/fake_ms_{idx}.png",
-                    #             fake_ms[0][:3, :, :].cpu().detach().numpy().transpose((1, 2 ,0))*255)
-                    # cv2.imwrite(self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/pan_{idx}.png",
-                    #             p[0][:3, :, :].cpu().detach().numpy().transpose((1, 2, 0))*255)
-                    # cv2.imwrite(self.cfg['expo_result'] + self.cfg['dqtl']['WEIGHTS'] + f"saved_images/ms_{idx}.png",
-                    #             m[0][:3, :, :].cpu().detach().numpy().transpose((1, 2, 0))*255)
 
                 fake_pan = fake_pan.cpu().detach().numpy()
                 fake_ms = fake_ms.cpu().detach().numpy()
@@ -194,64 +176,7 @@ class toStageSolver(Solver):
                 else:
                     train_loader.set_postfix(H_real=(D_P_real_loss / (idx + 1)).item(),
                                              H_fake=(D_P_fake_loss / (idx + 1)).item(), epoch=epoch)
-            ld_m, ld_p, lg_m, lg_p, lc_m, lc_p, li_m, li_p, la_m, la_p = sum(ld_m)/len(ld_m), sum(ld_p)/len(ld_p), sum(lg_m)/len(lg_m), sum(lg_p)/len(lg_p), sum(lc_m)/len(lc_m), sum(lc_p)/len(lc_p), sum(li_m)/len(li_m), sum(li_p)/len(li_p), sum(la_m)/len(la_m), sum(la_p)/len(la_p)
-            Ld_m.append(ld_m)
-            Ld_p.append(ld_p)
-            Lg_m.append(lg_m)
-            Lg_p.append(lg_p)
-            Lc_m.append(lc_m)
-            Lc_p.append(lc_p)
-            Li_m.append(li_m)
-            Li_p.append(li_p)
-            La_m.append(la_m)
-            La_p.append(la_p)
-            plt.figure(figsize=(10, 6))
 
-            epochs = list(range(1, epoch + 2))
-            plt.plot(epochs, Lc_m, label='cycle_ms_loss')
-            plt.plot(epochs, Lc_p, label='cycle_pan_loss')
-            plt.plot(epochs, Li_m, label='identity_ms_loss')
-            plt.plot(epochs, Li_p, label='identity_pan_loss')
-            plt.plot(epochs, La_m, label='adversarial_ms_loss')
-            plt.plot(epochs, La_p, label='adversarial_pan_loss')
-
-            # 设置图例
-            plt.legend()
-
-            # 添加标题和标签
-            plt.title('Loss Curves')
-            plt.xlabel('Epochs')
-            plt.ylabel('Loss')
-
-            # 显示网格
-            # plt.grid(True)
-
-            # 显示图像
-            plt.savefig('63loss.png')
-            plt.close()
-
-            plt.figure(figsize=(10, 6))
-
-            epochs = list(range(1, epoch + 2))
-
-            plt.plot(epochs, Ld_m, label='loss_D_P')
-            plt.plot(epochs, Ld_p, label='loss_D_M')
-            plt.plot(epochs, Lg_m, label='loss_G_P')
-            plt.plot(epochs, Lg_p, label='loss_G_M')
-
-            plt.legend()
-
-            # 添加标题和标签
-            plt.title('Loss Curves')
-            plt.xlabel('Epochs')
-            plt.ylabel('Loss')
-
-            # 显示网格
-            # plt.grid(True)
-
-            # 显示图像
-            plt.savefig('6loss.png')
-            plt.close()
 
     def train_stage1(self):
         # shape is (2001, 2101, 4)
