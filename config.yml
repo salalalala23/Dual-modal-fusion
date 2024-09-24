@@ -3,7 +3,7 @@ remark: none
 
 nohup: 0 #是否nohup运行
 data_new: 0 # remember to change train_rate
-model_name: dqtl
+model_name: gmfnet
 #ct_lstm #resnet18 # dqtl#cross_net
 #swin_transformer# vision_transformer#swin_T_dual
 data_address: ../../Remote data/RSclass/PAN-MS/{{dc}}/ # 数据集所在位置
@@ -38,7 +38,7 @@ epoch: 50 # 训练迭代数量
 time: 5 # 实验重复次数
 
 schedule:
-  loss:  qua_loss # Criterion # qua_loss # KL
+  loss:  Criterion # Criterion # qua_loss # KL
   optimizer: ADAM # 优化函数
   if_scheduler: 0
   scheduler:  ExponentialLR
@@ -62,35 +62,6 @@ color:
   index: 0 # 是够进行上色
   supervised: 1 # 是否上色有监督图像部分
   unsupervised: 1 # 是否上色无监督图像部分
-
-dqtl:
-  pre_trained: 1
-  load_model: 1
-  save_model: 0
-  WEIGHTS: dqtl_{{dc}}/{{ne}}_{{ps}}_3/
-  encoder_name: discriminator
-  decoder_name: generator
-  loss1: MSE
-  loss2: MSE
-  pic_size: 144 # gan裁切图像大小
-  batch_size: 4
-  lr: 1e-4 # LEARNING_RATE
-  l_id: 10 # LAMBDA_IDENTITY
-  l_cy: 10 # LAMBDA_CYCLE
-  l_ad: 10 # LAMBDA_ADVERSARIAL
-  num_workers: 0
-  mode: 1 # 0代表预训练好，1代表需要训练
-  num_epochs: 100
-  epochs: 100 # 训练时与num_epochs一致， 导入模型的haul更改此值
-  check_gH: _genh.pth
-  check_gZ: _genz.pth
-  check_dH: _disch.pth
-  check_dZ: _discz.pth
-  alpha: 0.01
-  beta: 0
-  gamma: 1
-  tao: 1e-3
-  epsilon: 1e-5
 
 trans:
   patch_size: 1
