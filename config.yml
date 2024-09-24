@@ -33,7 +33,7 @@ batchsize: 256 # 训练集batchsize
 test_batchsize: 300 # 测试集batchsize
 color_batchsize: 300 # 上色集batchsize
 train_rate: 0.02 # 训练数据的比例
-verify_rate: 0.05 # 验证数据的比例
+verify_rate: 0.02 # 验证数据的比例
 epoch: 50 # 训练迭代数量
 time: 5 # 实验重复次数
 
