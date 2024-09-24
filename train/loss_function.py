@@ -22,16 +22,7 @@ class qua_loss(nn.Module):
         p, q, r, s = data[:bs], data[bs:2 * bs], data[2 * bs:3 * bs], data[3 * bs:]# l_out = out[4*bs:]
         MSE = nn.MSELoss()
         smoothl1 = nn.SmoothL1Loss()
-        # P, Q, R, S = data[:bs], data[bs:2 * bs], data[2 * bs:3 * bs], data[3 * bs:]
-
-        # print(KL_M_P, KL_M_GM, torch.pow(KL_M_GP-KL_M_GM+tao, 2))
-        # print(KL_P_M, KL_P_GP, torch.pow(KL_P_GM-KL_P_GP+tao, 2))
-        # l1 = torch.pow(KL_M_P - KL_M_GM, 2) + KL_M_GM + torch.pow(KL_M_GP - KL_M_GM + tao, 2)
-        # l2 = torch.pow(KL_P_M - KL_P_GP, 2) + KL_P_GP + torch.pow(KL_P_GM - KL_P_GP + tao, 2)
-        # l3 = KL_M_GP / p + KL_P_GM / q
-        # print(l1, l2, l3)
-        # l1 = torch.exp(-torch.clip(KL_M_P + KL_M_GM - Kl_M_GP, min=0))
-        # l2 = torch.exp(-torch.clip(KL_P_M + KL_P_GP - KL_P_GM, min=0))
+        
         KL_M_P = F.kl_div((q + epsilon).log(), p, reduction='batchmean')
         KL_M_GM = F.kl_div((r + epsilon).log(), p, reduction='batchmean')
         KL_M_GP = F.kl_div((s + epsilon).log(), p, reduction='batchmean')
@@ -102,14 +93,3 @@ if __name__ == '__main__':
     print(y)
 import numpy as np
 import scipy.stats
-
-# def KL(p,q):
-#     return F.kl_div(p, q, reduction='batchmean')
-#
-# p=torch.tensor([0.01,0.01,0.9,0.1])
-# q=torch.tensor([0.6,0.1,0.1,10])
-# z=torch.tensor([0.61,0.26,0.12,10])
-# print(p.softmax(dim=-1), p.softmax(dim=-1).log(), q.softmax(dim=-1))
-# print(KL(q.softmax(dim=-1).log(), q.softmax(dim=-1))) # 0.011735745199107783
-# print(KL(q.softmax(dim=-1).log(), p.softmax(dim=-1))) # 0.013183150978050884
-# print(KL(q.softmax(dim=-1).log(), z.softmax(dim=-1))) # 0
